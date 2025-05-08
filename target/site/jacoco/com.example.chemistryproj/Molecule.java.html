@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Molecule.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChemistryProj</a> &gt; <a href="index.source.html" class="el_package">com.example.chemistryproj</a> &gt; <span class="el_source">Molecule.java</span></div><h1>Molecule.java</h1><pre class="source lang-java linenums">package com.example.chemistryproj;
+
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.shape.Circle;
+
+<span class="nc" id="L7">public class Molecule extends Group{</span>
+
+    private static final double NUCLEUS_X = 120;
+
+    private static final double NUCLEUS_Y = 120;
+
+    private static final double ATOMS_DISTANCE = 64;
+
+    public static Molecule createMethane() {
+<span class="nc" id="L16">        Molecule methane = new Molecule();</span>
+<span class="nc" id="L17">        Atom carbon = Atom.createAtomFromElementSymbol(&quot;C&quot;);</span>
+<span class="nc" id="L18">        Atom hydrogen1 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L19">        Atom hydrogen2 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L20">        Atom hydrogen3 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L21">        Atom hydrogen4 = new Atom(&quot;H&quot;);</span>
+
+<span class="nc" id="L23">        methane.getChildren().addAll(carbon, hydrogen1, hydrogen2, hydrogen3, hydrogen4);</span>
+
+<span class="nc" id="L25">        carbon.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L26">        hydrogen1.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L27">        hydrogen2.relocate(NUCLEUS_X - ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L28">        hydrogen3.relocate(NUCLEUS_X, NUCLEUS_Y + ATOMS_DISTANCE);</span>
+<span class="nc" id="L29">        hydrogen4.relocate(NUCLEUS_X, NUCLEUS_Y - ATOMS_DISTANCE);</span>
+
+<span class="nc" id="L31">        return methane;</span>
+    }
+
+    public static Molecule createPotassiumFluoride() {
+<span class="nc" id="L35">        Molecule potassiumFluoride = new Molecule();</span>
+<span class="nc" id="L36">        Atom potassium = Atom.createAtomFromElementSymbol(&quot;K&quot;);</span>
+<span class="nc" id="L37">        Atom fluorine = Atom.createAtomFromElementSymbol(&quot;F&quot;);</span>
+
+<span class="nc" id="L39">        potassiumFluoride.getChildren().addAll(potassium, fluorine);</span>
+
+<span class="nc" id="L41">        potassium.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L42">        fluorine.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+
+<span class="nc" id="L44">        return potassiumFluoride;</span>
+    }
+    public static Molecule createAmmonia() {
+<span class="nc" id="L47">        Molecule ammonia = new Molecule();</span>
+<span class="nc" id="L48">        Atom nitrogen = Atom.createAtomFromElementSymbol(&quot;N&quot;);</span>
+<span class="nc" id="L49">        Atom hydrogen1 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L50">        Atom hydrogen2 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L51">        Atom hydrogen3 = new Atom(&quot;H&quot;);</span>
+
+<span class="nc" id="L53">        ammonia.getChildren().addAll(nitrogen, hydrogen1, hydrogen2, hydrogen3);</span>
+
+<span class="nc" id="L55">        nitrogen.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L56">        hydrogen1.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L57">        hydrogen2.relocate(NUCLEUS_X - ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L58">        hydrogen3.relocate(NUCLEUS_X, NUCLEUS_Y + ATOMS_DISTANCE);</span>
+
+<span class="nc" id="L60">        return ammonia;</span>
+    }
+
+    public static Molecule createAluminumChloride() {
+<span class="nc" id="L64">        Molecule aluminumChloride = new Molecule();</span>
+<span class="nc" id="L65">        Atom aluminum = Atom.createAtomFromElementSymbol(&quot;Al&quot;);</span>
+<span class="nc" id="L66">        Atom chloride1 = Atom.createAtomFromElementSymbol(&quot;Cl&quot;);</span>
+<span class="nc" id="L67">        Atom chloride2 = Atom.createAtomFromElementSymbol(&quot;Cl&quot;);</span>
+<span class="nc" id="L68">        Atom chloride3 = Atom.createAtomFromElementSymbol(&quot;Cl&quot;);</span>
+
+<span class="nc" id="L70">        aluminumChloride.getChildren().addAll(aluminum, chloride1, chloride2, chloride3);</span>
+
+<span class="nc" id="L72">        aluminum.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L73">        chloride1.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L74">        chloride2.relocate(NUCLEUS_X - ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L75">        chloride3.relocate(NUCLEUS_X, NUCLEUS_Y + ATOMS_DISTANCE);</span>
+
+<span class="nc" id="L77">        return aluminumChloride;</span>
+    }
+
+    public static Molecule createWater() {
+<span class="nc" id="L81">        Molecule water = new Molecule();</span>
+<span class="nc" id="L82">        Atom oxygen = Atom.createAtomFromElementSymbol(&quot;O&quot;);</span>
+<span class="nc" id="L83">        Atom hydrogen1 = new Atom(&quot;H&quot;);</span>
+<span class="nc" id="L84">        Atom hydrogen2 = new Atom(&quot;H&quot;);</span>
+
+<span class="nc" id="L86">        water.getChildren().addAll(oxygen, hydrogen1, hydrogen2);</span>
+
+<span class="nc" id="L88">        oxygen.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L89">        hydrogen1.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L90">        hydrogen2.relocate(NUCLEUS_X - ATOMS_DISTANCE, NUCLEUS_Y);</span>
+
+<span class="nc" id="L92">        return water;</span>
+    }
+
+    public static Molecule createCarbonDioxide() {
+<span class="nc" id="L96">        Molecule carbonDioxide = new Molecule();</span>
+<span class="nc" id="L97">        Atom carbon = Atom.createAtomFromElementSymbol(&quot;C&quot;);</span>
+<span class="nc" id="L98">        carbon.removeElectronAtAngle(2);</span>
+<span class="nc" id="L99">        carbon.removeElectronAtAngle(3);</span>
+<span class="nc" id="L100">        Atom oxygen1 = Atom.createAtomFromElementSymbol(&quot;O&quot;);</span>
+<span class="nc" id="L101">        oxygen1.removeElectronAtAngle(0);</span>
+<span class="nc" id="L102">        Atom oxygen2 = Atom.createAtomFromElementSymbol(&quot;O&quot;);</span>
+<span class="nc" id="L103">        oxygen2.removeElectronAtAngle(2);</span>
+
+<span class="nc" id="L105">        carbonDioxide.getChildren().addAll(carbon, oxygen1, oxygen2);</span>
+
+<span class="nc" id="L107">        carbon.relocate(NUCLEUS_X, NUCLEUS_Y);</span>
+<span class="nc" id="L108">        oxygen1.relocate(NUCLEUS_X + ATOMS_DISTANCE, NUCLEUS_Y);</span>
+<span class="nc" id="L109">        oxygen2.relocate(NUCLEUS_X - ATOMS_DISTANCE, NUCLEUS_Y);</span>
+
+<span class="nc" id="L111">        return carbonDioxide;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

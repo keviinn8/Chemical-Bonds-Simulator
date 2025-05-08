@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MolecularController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChemistryProj</a> &gt; <a href="index.source.html" class="el_package">com.example.chemistryprojControllers</a> &gt; <span class="el_source">MolecularController.java</span></div><h1>MolecularController.java</h1><pre class="source lang-java linenums">package com.example.chemistryprojControllers;
+
+import com.example.chemistryproj.Atom;
+import com.example.chemistryproj.HelloApplication;
+import com.example.chemistryproj.Molecule;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+<span class="nc" id="L35">public class MolecularController{</span>
+
+    @FXML
+    private GridPane periodicTable;
+    @FXML
+    private Pane moleculePane;
+    @FXML
+    private ListView&lt;String&gt; molList;
+    public Label messageLabel;
+<span class="nc" id="L44">    private Atom atomClicked = null;</span>
+    // Variables to store selected atoms for each position
+<span class="nc" id="L46">    private Atom topLeftAtom = null;</span>
+<span class="nc" id="L47">    private Atom topRightAtom = null;</span>
+<span class="nc" id="L48">    private Atom bottomLeftAtom = null;</span>
+<span class="nc" id="L49">    private Atom bottomRightAtom = null;</span>
+<span class="nc" id="L50">    private Atom centerAtom = null;</span>
+<span class="nc" id="L51">    private static final Duration ANIMATION_DURATION = Duration.seconds(1);</span>
+    private static final double DISTANCE_BETWEEN_ATOMS = 64.0;
+    private Stage stage;
+    private Scene scene;
+    private Parent fxmlLoader;
+<span class="nc" id="L56">    private Random random = new Random();</span>
+<span class="nc" id="L57">    private static final String[][] elements = {</span>
+            {&quot;H&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,  &quot;He&quot;},
+            {&quot;Li&quot;, &quot;Be&quot;, &quot;&quot;, &quot;&quot;,  &quot;B&quot;, &quot;C&quot;, &quot;N&quot;, &quot;O&quot;, &quot;F&quot;, &quot;Ne&quot;},
+            {&quot;Na&quot;, &quot;Mg&quot;, &quot;&quot;, &quot;&quot;,  &quot;Al&quot;, &quot;Si&quot;, &quot;P&quot;, &quot;S&quot;, &quot;Cl&quot;, &quot;Ar&quot;},
+            {&quot;K&quot;, &quot;Ca&quot;, &quot;&quot;, &quot;&quot;,  &quot;Ga&quot;, &quot;Ge&quot;, &quot;As&quot;, &quot;Se&quot;, &quot;Br&quot;, &quot;Kr&quot;}
+    };
+
+    public void initialize() {
+<span class="nc" id="L65">        populateElementsGrid();</span>
+//        moleculePane.setOnMouseClicked(event -&gt; handleAtomClicked(event));
+<span class="nc" id="L67">    }</span>
+
+    public void backToIntro(ActionEvent event) throws IOException {
+<span class="nc" id="L70">        fxmlLoader = FXMLLoader.load(HelloApplication.class.getResource(&quot;Intro-Scene.fxml&quot;));</span>
+<span class="nc" id="L71">        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();</span>
+<span class="nc" id="L72">        scene = new Scene(fxmlLoader);</span>
+<span class="nc" id="L73">        stage.setScene(scene);</span>
+<span class="nc" id="L74">        stage.show();</span>
+<span class="nc" id="L75">    }</span>
+
+    private void populateElementsGrid() {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        for (int row = 0; row &lt; elements.length; row++) {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            for (int col = 0; col &lt; elements[row].length; col++) {</span>
+<span class="nc" id="L80">                String elementName = elements[row][col];</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                if (!elementName.isEmpty()) {</span>
+<span class="nc" id="L82">                    Button button = new Button(elementName);</span>
+<span class="nc" id="L83">                    button.setMinSize(50, 50);</span>
+<span class="nc" id="L84">                    button.setOnAction(ActionEvent -&gt; handleElementButtonPress());</span>
+<span class="nc" id="L85">                    periodicTable.add(button, col, row);</span>
+                }
+            }
+        }
+<span class="nc" id="L89">    }</span>
+
+    // Method to handle button presses for displaying atoms
+
+    @FXML
+    private void handleElementButtonPress() {
+<span class="nc" id="L95">        Button clickedButton = (Button) periodicTable.getScene().getFocusOwner();</span>
+<span class="nc" id="L96">        String elementSymbol = clickedButton.getText();</span>
+<span class="nc" id="L97">        displayAtom(elementSymbol);</span>
+<span class="nc" id="L98">    }</span>
+
+    // Method to display the atom representation in the pane
+
+    private void displayAtom(String elementSymbol) {
+<span class="nc" id="L103">        Atom atom = createAtom(elementSymbol);</span>
+<span class="nc" id="L104">        moleculePane.getChildren().add(atom);</span>
+<span class="nc" id="L105">    }</span>
+
+    // Method to create atom representation based on the element symbol
+
+    private Atom createAtom(String elementSymbol) {
+<span class="nc" id="L110">        Atom atom = Atom.createAtomFromElementSymbol(elementSymbol);</span>
+<span class="nc" id="L111">        changeLocation(atom);</span>
+<span class="nc" id="L112">        return atom;</span>
+    }
+
+    private Atom changeLocation(Atom atom){
+<span class="nc" id="L116">        double paneWidth = moleculePane.getWidth();</span>
+<span class="nc" id="L117">        double paneHeight = moleculePane.getHeight();</span>
+<span class="nc" id="L118">        double atomWidth = atom.getWidth();</span>
+<span class="nc" id="L119">        double atomHeight = atom.getHeight();</span>
+
+        // Calculate the range for random positions
+<span class="nc" id="L122">        double minX = paneWidth * 0.25; // 25% from the left edge</span>
+<span class="nc" id="L123">        double minY = paneHeight * 0.25; // 25% from the top edge</span>
+<span class="nc" id="L124">        double maxX = paneWidth * 0.75 - atomWidth; // 25% from the right edge</span>
+<span class="nc" id="L125">        double maxY = paneHeight * 0.75 - atomHeight; // 25% from the bottom edge</span>
+
+        // Generate random positions within the adjusted range
+<span class="nc" id="L128">        double randomX = minX + random.nextDouble() * (maxX - minX);</span>
+<span class="nc" id="L129">        double randomY = minY + random.nextDouble() * (maxY - minY);</span>
+
+<span class="nc" id="L131">        atom.relocate(randomX, randomY);</span>
+
+<span class="nc" id="L133">        return atom;</span>
+    }
+
+    // Method to clear the moleculePane
+
+    @FXML
+    private void clearMoleculePane() {
+<span class="nc" id="L140">        moleculePane.getChildren().clear();</span>
+<span class="nc" id="L141">        atomClicked = null;</span>
+<span class="nc" id="L142">        topLeftAtom = null;</span>
+<span class="nc" id="L143">        topRightAtom = null;</span>
+<span class="nc" id="L144">        bottomLeftAtom = null;</span>
+<span class="nc" id="L145">        bottomRightAtom = null;</span>
+<span class="nc" id="L146">        centerAtom = null;</span>
+<span class="nc" id="L147">    }</span>
+
+    public void covalentInfo() {
+<span class="nc" id="L150">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L151">        alert.setTitle(&quot;Covalent Bonds Theory&quot;);</span>
+<span class="nc" id="L152">        alert.setContentText(&quot;Covalent bond, in chemistry, the interatomic linkage that results from the sharing of an &quot; +</span>
+                &quot;electron pair between two atoms. The binding arises from the electrostatic attraction of their nuclei &quot; +
+                &quot;for the same electrons. A covalent bond forms when the bonded atoms have a lower total energy than &quot; +
+                &quot;that of widely separated atoms.&quot;);
+<span class="nc" id="L156">        alert.showAndWait();</span>
+<span class="nc" id="L157">    }</span>
+
+    public void nobleInfo() {
+<span class="nc" id="L160">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L161">        alert.setTitle(&quot;Noble Atoms Theory&quot;);</span>
+<span class="nc" id="L162">        alert.setContentText(&quot;The Noble Atoms are the atoms that are stable and don't have any single electrons.&quot; +</span>
+                &quot;Therefore, the Noble Atoms cannot be bonded with any other atom.&quot;);
+<span class="nc" id="L164">        alert.showAndWait();</span>
+<span class="nc" id="L165">    }</span>
+
+    public void applicationInfo() {
+<span class="nc" id="L168">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L169">        alert.setTitle(&quot;Information About The Application&quot;);</span>
+<span class="nc" id="L170">        alert.setContentText(&quot;1) Pick the appropriate atoms from the periodic table presented to you. &quot; +</span>
+                &quot;\n 2) Click the react button and watch it bond together. &quot; +
+                &quot;\n 3) Select the pre-done molecules if you want&quot; +
+                &quot;\n 4) Once you have the molecule, click the 3d button to view the molecule in 3d.&quot;);
+<span class="nc" id="L174">        alert.showAndWait();</span>
+<span class="nc" id="L175">    }</span>
+
+    public void applicationHowTo() {
+<span class="nc" id="L178">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L179">        alert.setTitle(&quot;How To Use This Application&quot;);</span>
+<span class="nc" id="L180">        alert.setContentText(&quot;After to pick which atoms to work with, you can pick up to five: &quot; +</span>
+                &quot;\n - Double-click the atom to select it, it should turn green &quot; +
+                &quot;\n - Right-click a selected atom to delete it from the blue area&quot; +
+                &quot;\n - Press Separate to undo the react made&quot; +
+                &quot;\n - Press reset to clear the blue area&quot;);
+<span class="nc" id="L185">        alert.showAndWait();</span>
+<span class="nc" id="L186">    }</span>
+
+@FXML
+    private void handleAtomClicked(MouseEvent event) {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (event.getClickCount() == 2) {</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L192" title="All 4 branches missed.">                if (node instanceof Atom &amp;&amp; node.getBoundsInParent().contains(event.getX(), event.getY())) {</span>
+<span class="nc" id="L193">                    atomClicked = (Atom) node;</span>
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                    if (!atomClicked.isSelected()) {</span>
+                        // Select the clicked atom
+<span class="nc" id="L197">                        atomClicked.nucleus.setFill(Color.GREEN);</span>
+<span class="nc" id="L198">                        atomClicked.nucleus.setStroke(Color.BLACK);</span>
+
+                        // Determine the position based on the number of currently selected atoms
+<span class="nc bnc" id="L201" title="All 2 branches missed.">                        if (topLeftAtom == null) {</span>
+                            // Top left
+<span class="nc" id="L203">                            atomClicked.setLayoutX(moleculePane.getWidth() / 4);</span>
+<span class="nc" id="L204">                            atomClicked.setLayoutY(moleculePane.getHeight() / 4);</span>
+<span class="nc" id="L205">                            topLeftAtom = atomClicked;</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                        } else if (topRightAtom == null) {</span>
+                            // Top right
+<span class="nc" id="L208">                            atomClicked.setLayoutX(3 * moleculePane.getWidth() / 4);</span>
+<span class="nc" id="L209">                            atomClicked.setLayoutY(moleculePane.getHeight() / 4);</span>
+<span class="nc" id="L210">                            topRightAtom = atomClicked;</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                        } else if (bottomLeftAtom == null) {</span>
+                            // Bottom left
+<span class="nc" id="L213">                            atomClicked.setLayoutX(moleculePane.getWidth() / 4);</span>
+<span class="nc" id="L214">                            atomClicked.setLayoutY(3 * moleculePane.getHeight() / 4);</span>
+<span class="nc" id="L215">                            bottomLeftAtom = atomClicked;</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                        } else if (bottomRightAtom == null) {</span>
+                            // Bottom right
+<span class="nc" id="L218">                            atomClicked.setLayoutX(3 * moleculePane.getWidth() / 4);</span>
+<span class="nc" id="L219">                            atomClicked.setLayoutY(3 * moleculePane.getHeight() / 4);</span>
+<span class="nc" id="L220">                            bottomRightAtom = atomClicked;</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">                        } else if (centerAtom == null) {</span>
+                        // Center
+<span class="nc" id="L223">                        atomClicked.setLayoutX(moleculePane.getWidth() / 2);</span>
+<span class="nc" id="L224">                        atomClicked.setLayoutY(moleculePane.getHeight() / 2);</span>
+<span class="nc" id="L225">                        centerAtom = atomClicked;</span>
+                    }
+                    } else {
+                        // Deselect the clicked atom
+<span class="nc" id="L229">                        atomClicked.nucleus.setFill(Color.BLACK);</span>
+<span class="nc" id="L230">                        atomClicked.nucleus.setStroke(Color.BLACK);</span>
+<span class="nc" id="L231">                        changeLocation(atomClicked);</span>
+<span class="nc" id="L232">                        removeAtomFromSelection(atomClicked);</span>
+                    }
+<span class="nc" id="L234">                    break;</span>
+                }
+<span class="nc" id="L236">            }</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        } else if (event.getButton() == MouseButton.SECONDARY) {</span>
+            // Right-click to remove the selected atom
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L240" title="All 4 branches missed.">                if (node instanceof Atom &amp;&amp; node.getBoundsInParent().contains(event.getX(), event.getY())) {</span>
+<span class="nc" id="L241">                    Atom clickedAtom = (Atom) node;</span>
+<span class="nc" id="L242">                    moleculePane.getChildren().remove(clickedAtom);</span>
+<span class="nc" id="L243">                    removeAtomFromSelection(clickedAtom);</span>
+<span class="nc" id="L244">                    break;</span>
+                }
+<span class="nc" id="L246">            }</span>
+        }
+<span class="nc" id="L248">    }</span>
+
+    // Helper method to remove an atom from the selected atoms
+    private void removeAtomFromSelection(Atom atomToRemove) {
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (atomToRemove == topLeftAtom) {</span>
+<span class="nc" id="L253">            topLeftAtom = null;</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        } else if (atomToRemove == topRightAtom) {</span>
+<span class="nc" id="L255">            topRightAtom = null;</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        } else if (atomToRemove == bottomLeftAtom) {</span>
+<span class="nc" id="L257">            bottomLeftAtom = null;</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        } else if (atomToRemove == bottomRightAtom) {</span>
+<span class="nc" id="L259">            bottomRightAtom = null;</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        } else if (atomToRemove == centerAtom) {</span>
+<span class="nc" id="L261">            centerAtom = null;</span>
+        }
+<span class="nc" id="L263">    }</span>
+
+    private Atom findCentralAtom() {
+<span class="nc" id="L266">        Atom centralAtom = null;</span>
+<span class="nc" id="L267">        int maxAtomGroup = Integer.MIN_VALUE;</span>
+
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L270" title="All 4 branches missed.">            if (node instanceof Atom &amp;&amp; ((Atom) node).isSelected()) {</span>
+<span class="nc" id="L271">                Atom atom = (Atom) node;</span>
+<span class="nc" id="L272">                int atomGroup = atom.getAtomGroup(atom.name);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                if (atomGroup &gt; maxAtomGroup) {</span>
+<span class="nc" id="L274">                    maxAtomGroup = atomGroup;</span>
+<span class="nc" id="L275">                    centralAtom = atom;</span>
+                }
+            }
+<span class="nc" id="L278">        }</span>
+
+<span class="nc" id="L280">        return centralAtom;</span>
+    }
+<span class="nc" id="L282">    private List&lt;String&gt; allReactions = new ArrayList&lt;&gt;();</span>
+
+    @FXML
+    public void atomsReact() {
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        if (isNobleAtomSelected()) {</span>
+<span class="nc" id="L287">            createMessage(&quot;Can't react with a noble atom&quot;);</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        } else if (atomClicked == null) {</span>
+<span class="nc" id="L289">            createMessage(&quot;Select atoms!&quot;);</span>
+        } else {
+<span class="nc" id="L291">            StringBuilder reactionStringBuilder = new StringBuilder();</span>
+            // Find the atom with the most single electrons
+<span class="nc" id="L293">            Atom centralAtom = findCentralAtom();</span>
+<span class="nc" id="L294">            reactionStringBuilder.append(centralAtom.name).append(&quot; &quot;);</span>
+
+            // Check the atomGroup of the central atom
+<span class="nc" id="L297">            int centralAtomGroup = centralAtom.getAtomGroup(centralAtom.name);</span>
+<span class="nc" id="L298">            int maxReactingAtoms = centralAtomGroup;</span>
+
+<span class="nc" id="L300">            double centerX = moleculePane.getWidth() / 2.0;</span>
+<span class="nc" id="L301">            double centerY = moleculePane.getHeight() / 2.0;</span>
+
+            // Calculate the target position for the central atom (placed in the middle of the pane)
+<span class="nc" id="L304">            double targetX = centerX;</span>
+<span class="nc" id="L305">            double targetY = centerY;</span>
+
+            // Create a transition for the central atom to move to the center of the pane
+<span class="nc" id="L308">            TranslateTransition centralTransition = new TranslateTransition(ANIMATION_DURATION, centralAtom);</span>
+<span class="nc" id="L309">            centralTransition.setToX(targetX - centralAtom.getLayoutX());</span>
+<span class="nc" id="L310">            centralTransition.setToY(targetY - centralAtom.getLayoutY());</span>
+
+            // Create a parallel transition to handle all atom movements
+<span class="nc" id="L313">            ParallelTransition parallelTransition = new ParallelTransition();</span>
+<span class="nc" id="L314">            parallelTransition.getChildren().add(centralTransition);</span>
+
+            // Get the placement angles for other selected atoms
+<span class="nc" id="L317">            int[] angles = {0, 180, 90, 270};</span>
+
+<span class="nc bnc" id="L319" title="All 2 branches missed.">            for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L320" title="All 8 branches missed.">                if (node instanceof Atom &amp;&amp; node != centralAtom &amp;&amp; ((Atom) node).isSelected() &amp;&amp; maxReactingAtoms &gt; 0) {</span>
+<span class="nc" id="L321">                    Atom atom = (Atom) node;</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">                    if (atom.getAtomGroup(atom.name) == 1){</span>
+<span class="nc" id="L323">                        atom.removeElectronAtAngle(0);</span>
+                    }
+
+                    // Calculate the target position based on the remaining available positions
+<span class="nc" id="L327">                    double angle = Math.toRadians(angles[maxReactingAtoms - 1]);</span>
+<span class="nc" id="L328">                    maxReactingAtoms--;</span>
+
+                    // Calculate the target position for the atom based on its angle
+<span class="nc" id="L331">                    targetX = centerX + (DISTANCE_BETWEEN_ATOMS * Math.cos(angle));</span>
+<span class="nc" id="L332">                    targetY = centerY + (DISTANCE_BETWEEN_ATOMS * Math.sin(angle));</span>
+
+                    // Create a transition for the atom to move to the target position
+<span class="nc" id="L335">                    TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, atom);</span>
+<span class="nc" id="L336">                    transition.setToX(targetX - atom.getLayoutX());</span>
+<span class="nc" id="L337">                    transition.setToY(targetY - atom.getLayoutY());</span>
+
+                    // Add the transition to the parallel transition
+<span class="nc" id="L340">                    parallelTransition.getChildren().add(transition);</span>
+
+<span class="nc" id="L342">                    reactionStringBuilder.append(atom.name).append(&quot; &quot;);</span>
+                }
+<span class="nc" id="L344">            }</span>
+
+<span class="nc" id="L346">            allReactions.add(reactionStringBuilder.toString());</span>
+<span class="nc" id="L347">            ObservableList&lt;String&gt; listItems = FXCollections.observableArrayList(allReactions);</span>
+<span class="nc" id="L348">            molList.setItems(listItems);</span>
+
+            // Play the parallel transition
+<span class="nc" id="L351">            parallelTransition.play();</span>
+        }
+<span class="nc" id="L353">    }</span>
+
+    private boolean isNobleAtomSelected() {
+<span class="nc bnc" id="L356" title="All 2 branches missed.">        for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">            if (node instanceof Atom) {</span>
+<span class="nc" id="L358">                Atom atom = (Atom) node;</span>
+<span class="nc" id="L359">                String elementSymbol = atom.name;</span>
+<span class="nc bnc" id="L360" title="All 8 branches missed.">                if (elementSymbol.equals(&quot;He&quot;) || elementSymbol.equals(&quot;Ne&quot;) || elementSymbol.equals(&quot;Ar&quot;) || elementSymbol.equals(&quot;Kr&quot;)) {</span>
+<span class="nc" id="L361">                    return true;</span>
+                }
+            }
+<span class="nc" id="L364">        }</span>
+<span class="nc" id="L365">        return false;</span>
+    }
+
+    public void createMessage(String string){
+<span class="nc" id="L369">        Duration showDuration = Duration.seconds(2);</span>
+<span class="nc" id="L370">        Duration fadeDuration = Duration.seconds(1);</span>
+<span class="nc" id="L371">        messageLabel = new Label(string);</span>
+<span class="nc" id="L372">        messageLabel.setLayoutY(moleculePane.getHeight() - 20);</span>
+<span class="nc" id="L373">        moleculePane.getChildren().add(messageLabel);</span>
+<span class="nc" id="L374">        PauseTransition pause = new PauseTransition(showDuration);</span>
+<span class="nc" id="L375">        pause.setOnFinished(event -&gt; {</span>
+<span class="nc" id="L376">            FadeTransition fade = new FadeTransition(fadeDuration, messageLabel);</span>
+<span class="nc" id="L377">            fade.setFromValue(1.0);</span>
+<span class="nc" id="L378">            fade.setToValue(0.0);</span>
+<span class="nc" id="L379">            fade.setOnFinished(event1 -&gt; moleculePane.getChildren().remove(messageLabel));</span>
+<span class="nc" id="L380">            fade.play();</span>
+<span class="nc" id="L381">        });</span>
+
+<span class="nc" id="L383">        pause.play();</span>
+<span class="nc" id="L384">    }</span>
+
+    @FXML
+    public void reverseAnimation(){
+<span class="nc" id="L388">        ParallelTransition parallelTransition = new ParallelTransition();</span>
+
+<span class="nc bnc" id="L390" title="All 2 branches missed.">        for (Node node : moleculePane.getChildren()) {</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">            if (node instanceof Atom) {</span>
+<span class="nc" id="L392">                Atom atom = (Atom) node;</span>
+
+                // Create a transition for the atom to go back to its original position
+<span class="nc" id="L395">                TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, atom);</span>
+<span class="nc" id="L396">                transition.setToX(0); // Move to original X position</span>
+<span class="nc" id="L397">                transition.setToY(0); // Move to original Y position</span>
+
+                // Add the transition to the parallel transition
+<span class="nc" id="L400">                parallelTransition.getChildren().add(transition);</span>
+            }
+<span class="nc" id="L402">        }</span>
+
+        // Play the parallel transition
+<span class="nc" id="L405">        parallelTransition.play();</span>
+
+<span class="nc" id="L407">    }</span>
+
+    @FXML
+    private void addMethane() {
+<span class="nc" id="L411">        Molecule methane = Molecule.createMethane();</span>
+<span class="nc" id="L412">        moleculePane.getChildren().add(methane);</span>
+<span class="nc" id="L413">    }</span>
+
+    @FXML
+    private void addWater() {
+<span class="nc" id="L417">        Molecule water = Molecule.createWater();</span>
+<span class="nc" id="L418">        moleculePane.getChildren().add(water);</span>
+<span class="nc" id="L419">    }</span>
+
+    @FXML
+    private void addPotassiumFluoride() {
+<span class="nc" id="L423">        Molecule potassiumFluoride = Molecule.createPotassiumFluoride();</span>
+<span class="nc" id="L424">        moleculePane.getChildren().add(potassiumFluoride);</span>
+<span class="nc" id="L425">    }</span>
+
+    @FXML
+    private void addAmmonia() {
+<span class="nc" id="L429">        Molecule ammonia = Molecule.createAmmonia();</span>
+<span class="nc" id="L430">        moleculePane.getChildren().add(ammonia);</span>
+<span class="nc" id="L431">    }</span>
+
+    @FXML
+    private void addAluminumChloride() {
+<span class="nc" id="L435">        Molecule aluminumChloride = Molecule.createAluminumChloride();</span>
+<span class="nc" id="L436">        moleculePane.getChildren().add(aluminumChloride);</span>
+<span class="nc" id="L437">    }</span>
+
+    @FXML
+    private void addCarbonDioxide() {
+<span class="nc" id="L441">        Molecule carbonDioxide = Molecule.createCarbonDioxide();</span>
+<span class="nc" id="L442">        moleculePane.getChildren().add(carbonDioxide);</span>
+<span class="nc" id="L443">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

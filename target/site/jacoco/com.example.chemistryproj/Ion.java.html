@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChemistryProj</a> &gt; <a href="index.source.html" class="el_package">com.example.chemistryproj</a> &gt; <span class="el_source">Ion.java</span></div><h1>Ion.java</h1><pre class="source lang-java linenums">package com.example.chemistryproj;
+
+import javafx.animation.*;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Sphere;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Ion {
+    private static final int NUCLEUS_RADIUS = 10;
+<span class="nc" id="L16">    public String ionName = &quot;&quot;;</span>
+    public int charge;
+    public boolean isMetal;
+    public ArrayList&lt;Electron&gt; electronsArray;
+    public ArrayList&lt;Electron&gt; originalElectronsArray;
+    public Group ion;
+    public Circle ionNucleus;
+    public Circle ionCloud;
+    public int numOfBonds;
+    private static final double DIVIDE = 3.0 / 8.0;
+    public Ion metal;
+    public Ion nonMetal;
+    public int neutrons;
+    public int protons;
+<span class="nc" id="L30">    public int counterOfBonds = 0;</span>
+
+    public Group groupIon;
+    private String fullName;
+    public int originalCharge;
+
+<span class="nc" id="L36">    private String tempName = &quot;&quot;;</span>
+<span class="nc" id="L37">    private static String[] superscripts = {</span>
+            &quot;\u00B9&quot;, // Superscript One
+            &quot;\u00B2&quot;, // Superscript Two
+            &quot;\u00B3&quot;, // Superscript Three
+            &quot;\u2074&quot;, // Superscript Four
+            &quot;\u2075&quot;, // Superscript Five
+            &quot;\u2076&quot;, // Superscript Six
+            &quot;\u2077&quot;, // Superscript Seven
+            &quot;\u2078&quot;, // Superscript Eight
+            &quot;\u2079&quot;, // Superscript Nine
+    };
+
+
+<span class="nc" id="L50">    public Ion(String ionName, int charge, boolean isMetal, int numOfBonds, int neutrons, int protons, String fullname) {</span>
+<span class="nc" id="L51">        this.ionName = ionName;</span>
+<span class="nc" id="L52">        this.charge = charge;</span>
+<span class="nc" id="L53">        this.isMetal = isMetal;</span>
+<span class="nc" id="L54">        this.numOfBonds = numOfBonds;</span>
+<span class="nc" id="L55">        this.neutrons = neutrons;</span>
+<span class="nc" id="L56">        this.protons = protons;</span>
+<span class="nc" id="L57">        this.electronsArray = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L58">        this.originalElectronsArray = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L59">        this.ion = new Group();</span>
+<span class="nc" id="L60">        this.fullName = fullname;</span>
+<span class="nc" id="L61">        this.originalCharge = charge;</span>
+<span class="nc" id="L62">    }</span>
+
+<span class="nc" id="L64">    public Ion() {</span>
+
+<span class="nc" id="L66">    }</span>
+
+<span class="nc" id="L68">    public Ion(Ion metal, Ion nonMetal, Group g) {</span>
+<span class="nc" id="L69">        this.metal = metal;</span>
+<span class="nc" id="L70">        this.nonMetal = nonMetal;</span>
+<span class="nc" id="L71">        ionName = metal.ionName + nonMetal.ionName;</span>
+<span class="nc" id="L72">        this.ion = g;</span>
+
+<span class="nc" id="L74">    }</span>
+
+    public void addIon() {
+        Color c;
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (isMetal) {</span>
+<span class="nc" id="L79">            c = Color.SILVER;</span>
+        } else {
+<span class="nc" id="L81">            c = Color.GREEN;</span>
+        }
+<span class="nc" id="L83">        this.ionNucleus = new Circle(NUCLEUS_RADIUS, c);</span>
+<span class="nc" id="L84">        this.ionNucleus.setStroke(Color.BLACK);</span>
+
+<span class="nc" id="L86">        ionCloud = new Circle(this.ionNucleus.getCenterX(), this.ionNucleus.getCenterY(), NUCLEUS_RADIUS * 4);</span>
+<span class="nc" id="L87">        ionCloud.setFill(null);</span>
+<span class="nc" id="L88">        ionCloud.setStroke(Color.BLACK);</span>
+<span class="nc" id="L89">        ionCloud.centerXProperty().bind(ionNucleus.centerXProperty());</span>
+<span class="nc" id="L90">        ionCloud.centerYProperty().bind(ionNucleus.centerYProperty());</span>
+<span class="nc" id="L91">        ionCloud.setVisible(true);</span>
+
+<span class="nc" id="L93">        ion.getChildren().addAll(ionNucleus, ionCloud);</span>
+<span class="nc" id="L94">        double angleDiv = 360.0 / 8.0;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (int i = 0; i &lt; charge; i++) {</span>
+
+<span class="nc" id="L97">            double d1 = ionCloud.getRadius() * Math.cos(Math.toRadians(angleDiv * i));</span>
+<span class="nc" id="L98">            double d2 = ionCloud.getRadius() * Math.sin(Math.toRadians(angleDiv * i));</span>
+
+<span class="nc" id="L100">            Electron e = new Electron(new Circle(4, Color.BLUE));</span>
+<span class="nc" id="L101">            e.electron.centerXProperty().bind(ionNucleus.centerXProperty().add(d1));</span>
+<span class="nc" id="L102">            e.electron.centerYProperty().bind(ionNucleus.centerYProperty().add(d2));</span>
+<span class="nc" id="L103">            rotateElectrons(e, (DIVIDE * i));</span>
+<span class="nc" id="L104">            electronsArray.add(e);</span>
+<span class="nc" id="L105">            originalElectronsArray.add(e);</span>
+
+
+<span class="nc" id="L108">            ion.getChildren().add(e.electron);</span>
+        }
+<span class="nc" id="L110">        Text tx = new Text(ionName);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (!isMetal) {</span>
+<span class="nc" id="L112">            tx.setFill(Color.WHITE);</span>
+        } else {
+<span class="nc" id="L114">            tx.setFill(Color.BLACK);</span>
+        }
+<span class="nc" id="L116">        tx.xProperty().bind(ionNucleus.centerXProperty().subtract(tx.getLayoutBounds().getWidth() / 2));</span>
+<span class="nc" id="L117">        tx.yProperty().bind(ionNucleus.centerYProperty().add(ionNucleus.getCenterY() + 5));</span>
+
+<span class="nc" id="L119">        ion.getChildren().addAll(tx);</span>
+<span class="nc" id="L120">    }</span>
+
+    public static int transitionValenceElectrons(Ion metal, Ion nonMetal) {
+<span class="nc" id="L123">        metal.stopElectrons();</span>
+<span class="nc" id="L124">        nonMetal.stopElectrons();</span>
+<span class="nc" id="L125">        int rr = metal.charge;</span>
+<span class="nc" id="L126">        int tot = nonMetal.charge + metal.charge;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (tot &gt;= 9) {</span>
+<span class="nc" id="L128">            nonMetal.charge = 8;</span>
+<span class="nc" id="L129">            rr = metal.charge - (tot - 8);</span>
+<span class="nc" id="L130">            metal.charge = tot - 8;</span>
+
+        } else {
+<span class="nc" id="L133">            nonMetal.charge = tot;</span>
+<span class="nc" id="L134">            metal.charge = 0;</span>
+        }
+<span class="nc" id="L136">        return rr;</span>
+    }
+
+    public static void exchangeElectrons(Ion metal, Ion nonMetal) {
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        for (int i = nonMetal.electronsArray.size(); i &lt; nonMetal.charge; i++) {</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">            if ((!metal.electronsArray.isEmpty())) {</span>
+<span class="nc" id="L142">                metal.electronsArray.getFirst().electron.setFill(Color.ORANGE);</span>
+<span class="nc" id="L143">                nonMetal.electronsArray.add(metal.electronsArray.getFirst());</span>
+<span class="nc" id="L144">                metal.electronsArray.removeFirst();</span>
+            }
+        }
+
+<span class="nc" id="L148">    }</span>
+
+
+    private void rotateElectrons(Electron e, double x) {
+<span class="nc" id="L152">        e.path = new PathTransition(Duration.seconds(3), ionCloud, e.electron);</span>
+<span class="nc" id="L153">        e.path.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);</span>
+<span class="nc" id="L154">        e.path.setCycleCount(Animation.INDEFINITE);</span>
+<span class="nc" id="L155">        e.path.setInterpolator(Interpolator.LINEAR);</span>
+<span class="nc" id="L156">        e.path.playFrom(Duration.seconds(x));</span>
+
+<span class="nc" id="L158">    }</span>
+
+    public void playElectrons() {
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        for (int i = 0; i &lt; this.electronsArray.size(); i++) {</span>
+<span class="nc" id="L162">            rotateElectrons(this.electronsArray.get(i), DIVIDE * i);</span>
+        }
+<span class="nc" id="L164">    }</span>
+
+    public void stopElectrons() {
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        for (int i = 0; i &lt; this.electronsArray.size(); i++) {</span>
+<span class="nc" id="L168">            this.electronsArray.get(i).path.pause();</span>
+        }
+<span class="nc" id="L170">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc bnc" id="L174" title="All 4 branches missed.">        if (metal == null &amp;&amp; nonMetal == null) {</span>
+<span class="nc" id="L175">            return fullName + &quot;:\nProtons: &quot; + this.protons+ &quot; Neutrons: &quot; + this.neutrons;</span>
+        } else {
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (tempName.equals(&quot;&quot;)) {</span>
+                String r, t;
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                if (metal.isMetal) {</span>
+<span class="nc" id="L180">                    r = &quot;\u207A&quot;;</span>
+<span class="nc" id="L181">                    t = &quot;\u207B&quot;;</span>
+                } else {
+<span class="nc" id="L183">                    t = &quot;\u207A&quot;;</span>
+<span class="nc" id="L184">                    r = &quot;\u207B&quot;;</span>
+                }
+<span class="nc" id="L186">                tempName = metal.ionName + r + superscripts[metal.charge - 1] + nonMetal.ionName + t + superscripts[nonMetal.numOfBonds - 1];</span>
+            }
+<span class="nc" id="L188">            return tempName;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

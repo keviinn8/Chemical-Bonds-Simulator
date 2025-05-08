@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IonicController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChemistryProj</a> &gt; <a href="index.source.html" class="el_package">com.example.chemistryprojControllers</a> &gt; <span class="el_source">IonicController.java</span></div><h1>IonicController.java</h1><pre class="source lang-java linenums">package com.example.chemistryprojControllers;
+
+import com.example.chemistryproj.Electron;
+import com.example.chemistryproj.HelloApplication;
+import com.example.chemistryproj.Ion;
+import javafx.animation.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ResourceBundle;
+
+<span class="nc" id="L35">public class IonicController implements Initializable {</span>
+    @FXML
+    private Button playPause;
+    @FXML
+    private Button resetButton;
+    @FXML
+    private Pane animationPane;
+    @FXML
+    private HBox boxIons;
+    @FXML
+    private ListView&lt;Ion&gt; ionListView;
+    @FXML
+    private Button button3D;
+    @FXML
+    private Circle circleCenter;
+    @FXML
+    private Label label1;
+    private Stage stage;
+    private Scene scene;
+    private Parent fxmlLoader;
+<span class="nc" id="L55">    static String[] ions = {&quot;O&quot;, &quot;C&quot;, &quot;I&quot;, &quot;P&quot;, &quot;Cl&quot;};</span>
+<span class="nc" id="L56">    static String[] metals = {&quot;Au&quot;, &quot;Ag&quot;, &quot;Cu&quot;, &quot;Fe&quot;, &quot;Hg&quot;, &quot;Zn&quot;, &quot;Na&quot;};</span>
+<span class="nc" id="L57">    private static Button[] nonMetalButtons = new Button[ions.length];</span>
+<span class="nc" id="L58">    private static Button[] metalButtons = new Button[metals.length];</span>
+    private double mouseX, mouseY, mouseX1, mouseY1;
+    private static ArrayList&lt;Ion&gt; arrIons;
+    private int counter;
+    private ObservableList&lt;Ion&gt; arrIons1;
+<span class="nc" id="L63">    private ArrayList&lt;Ion&gt; selectedIon = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L64">    private static ArrayList&lt;Ion&gt; arrayOfIonsCreated = new ArrayList&lt;&gt;();</span>
+    private boolean isItMetal;
+<span class="nc" id="L66">    private Ion current = null;</span>
+    private FillTransition ft;
+    AnimationTimer animation;
+<span class="nc" id="L69">    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), event -&gt; {</span>
+<span class="nc" id="L70">        label1.setVisible(false);</span>
+<span class="nc" id="L71">    }));</span>
+
+    public void initialize(URL location, ResourceBundle resources) {
+<span class="nc" id="L74">        isItMetal = false;</span>
+<span class="nc" id="L75">        ionListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);</span>
+<span class="nc" id="L76">        counter = 0;</span>
+<span class="nc" id="L77">        arrIons = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L78">        mouseX = mouseX1 = mouseY = mouseY1 = 0;</span>
+<span class="nc" id="L79">        System.out.println(&quot;hello&quot;);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for (int i = 0; i &lt; ions.length; i++) {</span>
+<span class="nc" id="L81">            Button b = new Button(ions[i]);</span>
+<span class="nc" id="L82">            b.setMinSize(70, 50);</span>
+<span class="nc" id="L83">            b.setOnAction(e -&gt; {</span>
+<span class="nc" id="L84">                ionButton(b.getText());</span>
+<span class="nc" id="L85">            });</span>
+<span class="nc" id="L86">            boxIons.getChildren().add(b);</span>
+<span class="nc" id="L87">            nonMetalButtons[i] = b;</span>
+        }
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        for (int i = 0; i &lt; metals.length; i++) {</span>
+<span class="nc" id="L91">            Button b = new Button(metals[i]);</span>
+<span class="nc" id="L92">            b.setMinSize(70, 50);</span>
+<span class="nc" id="L93">            b.setOnAction(e -&gt; {</span>
+<span class="nc" id="L94">                ionButton(b.getText());</span>
+<span class="nc" id="L95">            });</span>
+<span class="nc" id="L96">            metalButtons[i] = b;</span>
+        }
+<span class="nc" id="L98">        arrIons1 = FXCollections.observableArrayList(arrIons);</span>
+<span class="nc" id="L99">        ionListView.setItems(arrIons1);</span>
+
+<span class="nc" id="L101">    }</span>
+
+    public static ArrayList getArrIons() {
+<span class="nc" id="L104">        return arrIons;</span>
+    }
+
+    public static ArrayList getArrayOfIonsCreated() {
+<span class="nc" id="L108">        return arrayOfIonsCreated;</span>
+    }
+
+    private void setUpIon(Ion ion, int i) {
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (counter &lt; 10) {</span>
+<span class="nc" id="L113">            ion.addIon();</span>
+<span class="nc" id="L114">            ion.ionNucleus.setCenterX(i);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            if (ion.isMetal) {</span>
+<span class="nc" id="L116">                ion.ionNucleus.setCenterY(200);</span>
+            } else {
+<span class="nc" id="L118">                ion.ionNucleus.setCenterY(300);</span>
+            }
+<span class="nc" id="L120">            animationPane.getChildren().add(ion.ion);</span>
+<span class="nc" id="L121">            ion.ion.setOnMousePressed(e -&gt; {</span>
+<span class="nc" id="L122">                mouseX = e.getSceneX() - ion.ionNucleus.getCenterX();</span>
+<span class="nc" id="L123">                mouseY = e.getSceneY() - ion.ionNucleus.getCenterY();</span>
+<span class="nc" id="L124">            });</span>
+<span class="nc" id="L125">            ion.ion.setOnMouseDragged(e -&gt; {</span>
+<span class="nc" id="L126">                ion.stopElectrons();</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">                if (e.getSceneX() &lt; (animationPane.getWidth()) &amp;&amp; e.getSceneX() &gt; 50) {</span>
+<span class="nc" id="L128">                    ion.ionNucleus.setCenterX((int) (e.getSceneX() - mouseX));</span>
+                }
+<span class="nc bnc" id="L130" title="All 4 branches missed.">                if (e.getSceneY() &lt; (animationPane.getHeight()) &amp;&amp; e.getSceneY() &gt; 50) {</span>
+<span class="nc" id="L131">                    ion.ionNucleus.setCenterY((int) (e.getSceneY() - mouseY));</span>
+                }
+<span class="nc" id="L133">                ion.playElectrons();</span>
+<span class="nc" id="L134">            });</span>
+<span class="nc" id="L135">            ion.ion.setOnMouseClicked(e -&gt; {</span>
+<span class="nc bnc" id="L136" title="All 6 branches missed.">                if (e.getClickCount() == 2 &amp; e.getButton() == MouseButton.PRIMARY) {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                    if (current == null) {</span>
+<span class="nc" id="L138">                        ion.stopElectrons();</span>
+<span class="nc" id="L139">                        ion.ionNucleus.setCenterX((int) circleCenter.getBoundsInParent().getCenterX());</span>
+<span class="nc" id="L140">                        ion.ionNucleus.setCenterY((int) circleCenter.getBoundsInParent().getCenterY());</span>
+<span class="nc" id="L141">                        ion.playElectrons();</span>
+<span class="nc" id="L142">                        current = ion;</span>
+<span class="nc" id="L143">                        ft = new FillTransition(Duration.seconds(0.3), current.ionNucleus, Color.RED, Color.YELLOW);</span>
+<span class="nc" id="L144">                        ft.setAutoReverse(true);</span>
+<span class="nc" id="L145">                        ft.setCycleCount(Animation.INDEFINITE);</span>
+<span class="nc" id="L146">                        ft.play();</span>
+<span class="nc" id="L147">                        current.ionNucleus.setFill(Color.GREEN);</span>
+                    } else {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                        if (current.equals(ion)) {</span>
+<span class="nc" id="L150">                            System.out.println(&quot;same&quot;);</span>
+                        } else {
+<span class="nc" id="L152">                            isIonCompatible(current, ion);</span>
+                        }
+                    }
+                }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                if (e.getButton() == MouseButton.SECONDARY) {</span>
+<span class="nc" id="L157">                    Label l = new Label();</span>
+<span class="nc" id="L158">                    l.setText(ion.toString());</span>
+<span class="nc" id="L159">                    l.setStyle(&quot;-fx-background-color: transparent; -fx-padding: 5px;&quot;);</span>
+<span class="nc" id="L160">                    l.setLayoutX(e.getSceneX());</span>
+<span class="nc" id="L161">                    l.setLayoutY(e.getSceneY());</span>
+<span class="nc" id="L162">                    animationPane.getChildren().add(l);</span>
+<span class="nc" id="L163">                    PauseTransition p = new PauseTransition(Duration.seconds(3));</span>
+<span class="nc" id="L164">                    p.setOnFinished(er -&gt; {</span>
+<span class="nc" id="L165">                        animationPane.getChildren().remove(l);</span>
+<span class="nc" id="L166">                    });</span>
+<span class="nc" id="L167">                    p.play();</span>
+
+                }
+
+<span class="nc" id="L171">            });</span>
+        } else {
+<span class="nc" id="L173">            label1.setText(&quot;Maximum number of ions&quot;);</span>
+<span class="nc" id="L174">            label1.setVisible(true);</span>
+<span class="nc" id="L175">            timeline.play();</span>
+        }
+<span class="nc" id="L177">    }</span>
+
+    private void ionButton(String element) {
+        Ion ion;
+<span class="nc bnc" id="L181" title="All 13 branches missed.">        switch (element) {</span>
+            case &quot;O&quot; -&gt; {
+<span class="nc" id="L183">                ion = new Ion(element, 6, false, 2, 8, 8, &quot;Oxigen&quot;);</span>
+<span class="nc" id="L184">                switchInside(ion, 50);</span>
+<span class="nc" id="L185">            }</span>
+            case &quot;C&quot; -&gt; {
+<span class="nc" id="L187">                ion = new Ion(element, 6, false, 2, 6, 6, &quot;Carbon&quot;);</span>
+<span class="nc" id="L188">                switchInside(ion, 150);</span>
+<span class="nc" id="L189">            }</span>
+            case &quot;I&quot; -&gt; {
+<span class="nc" id="L191">                ion = new Ion(element, 7, false, 2, 74, 53, &quot;Iodine&quot;);</span>
+<span class="nc" id="L192">                switchInside(ion, 250);</span>
+<span class="nc" id="L193">            }</span>
+            case &quot;P&quot; -&gt; {
+<span class="nc" id="L195">                ion = new Ion(element, 5, false, 1, 15, 16, &quot;Phosphorus&quot;);</span>
+<span class="nc" id="L196">                switchInside(ion, 350);</span>
+<span class="nc" id="L197">            }</span>
+            case &quot;Cl&quot; -&gt; {
+<span class="nc" id="L199">                ion = new Ion(element, 7, false, 1, 30, 17, &quot;Chloride&quot;);</span>
+<span class="nc" id="L200">                switchInside(ion, 450);</span>
+<span class="nc" id="L201">            }</span>
+
+            case &quot;Ag&quot; -&gt; {
+<span class="nc" id="L204">                ion = new Ion(element, 1, true, 1, 11, 11, &quot;Silver&quot;);</span>
+<span class="nc" id="L205">                switchInside(ion, 150);</span>
+<span class="nc" id="L206">            }</span>
+            case &quot;Au&quot; -&gt; {
+<span class="nc" id="L208">                ion = new Ion(element, 1, true, 1, 60, 47, &quot;Gold&quot;);</span>
+<span class="nc" id="L209">                switchInside(ion, 50);</span>
+<span class="nc" id="L210">            }</span>
+            case &quot;Cu&quot; -&gt; {
+<span class="nc" id="L212">                ion = new Ion(element, 1, true, 2, 34, 29, &quot;Copper&quot;);</span>
+<span class="nc" id="L213">                switchInside(ion, 250);</span>
+<span class="nc" id="L214">            }</span>
+            case &quot;Fe&quot; -&gt; {
+<span class="nc" id="L216">                ion = new Ion(element, 2, true, 2, 30, 26, &quot;Iron&quot;);</span>
+<span class="nc" id="L217">                switchInside(ion, 350);</span>
+<span class="nc" id="L218">            }</span>
+            case &quot;Hg&quot; -&gt; {
+<span class="nc" id="L220">                ion = new Ion(element, 2, true, 2, 122, 80, &quot;Mercury&quot;);</span>
+<span class="nc" id="L221">                switchInside(ion, 450);</span>
+<span class="nc" id="L222">            }</span>
+            case &quot;Zn&quot; -&gt; {
+<span class="nc" id="L224">                ion = new Ion(element, 2, true, 2, 34, 30, &quot;Zinc&quot;);</span>
+<span class="nc" id="L225">                switchInside(ion, 550);</span>
+<span class="nc" id="L226">            }</span>
+            case &quot;Na&quot; -&gt; {
+<span class="nc" id="L228">                ion = new Ion(element, 1, true, 1, 12, 11, &quot;Sodium&quot;);</span>
+<span class="nc" id="L229">                switchInside(ion, 650);</span>
+            }
+        }
+<span class="nc" id="L232">    }</span>
+
+    private void switchInside(Ion ion, int i) {
+<span class="nc" id="L235">        counter++;</span>
+<span class="nc" id="L236">        setUpIon(ion, i);</span>
+<span class="nc" id="L237">        boolean boo = false;</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        for (Ion io : arrIons) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (io.ionName.equals(ion.ionName)) {</span>
+<span class="nc" id="L240">                boo = true;</span>
+<span class="nc" id="L241">                break;</span>
+            }
+<span class="nc" id="L243">        }</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (!boo) {</span>
+<span class="nc" id="L245">            arrIons.add(ion);</span>
+        }
+<span class="nc" id="L247">        ion.stopElectrons();</span>
+<span class="nc" id="L248">        ion.playElectrons();</span>
+<span class="nc" id="L249">    }</span>
+
+    @FXML
+    public void goBackhome(ActionEvent event) throws IOException {
+<span class="nc" id="L253">        fxmlLoader = FXMLLoader.load(HelloApplication.class.getResource(&quot;Intro-Scene.fxml&quot;));</span>
+<span class="nc" id="L254">        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();</span>
+<span class="nc" id="L255">        scene = new Scene(fxmlLoader);</span>
+<span class="nc" id="L256">        stage.setScene(scene);</span>
+<span class="nc" id="L257">        stage.show();</span>
+
+<span class="nc" id="L259">    }</span>
+
+    @FXML
+    void playOrPauseAnimation(ActionEvent event) {
+<span class="nc" id="L263">        animationPane.getChildren().clear();</span>
+<span class="nc" id="L264">        arrayOfIonsCreated.clear();</span>
+<span class="nc" id="L265">        arrIons.clear();</span>
+<span class="nc" id="L266">        selectedIon.clear();</span>
+<span class="nc" id="L267">        ionListView.getItems().clear();</span>
+<span class="nc" id="L268">        current = null;</span>
+<span class="nc" id="L269">    }</span>
+
+<span class="nc" id="L271">    PauseTransition ptX = new PauseTransition(Duration.millis(1));</span>
+<span class="nc" id="L272">    PauseTransition ptY = new PauseTransition(Duration.millis(1));</span>
+
+    private void performeLoopX(Ion i1, boolean signX, int comienzoX, int finX) {
+<span class="nc" id="L275">        ptX = new PauseTransition(Duration.millis(1));</span>
+<span class="nc bnc" id="L276" title="All 8 branches missed.">        if ((signX &amp;&amp; comienzoX &gt;= finX) || (!signX &amp;&amp; comienzoX &lt;= finX)) {</span>
+<span class="nc" id="L277">            return;</span>
+        } else {
+<span class="nc" id="L279">            i1.ionNucleus.setCenterX(comienzoX);</span>
+<span class="nc" id="L280">            ptX.play();</span>
+<span class="nc" id="L281">            ptX.setOnFinished(e -&gt; {</span>
+                int c;
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                if (signX) {</span>
+<span class="nc" id="L284">                    c = comienzoX + 5;</span>
+                } else {
+<span class="nc" id="L286">                    c = comienzoX - 5;</span>
+                }
+<span class="nc" id="L288">                performeLoopX(i1, signX, c, finX);</span>
+<span class="nc" id="L289">            });</span>
+        }
+<span class="nc" id="L291">    }</span>
+
+    private void performeLoopY(Ion i1, boolean signY, int comienzoY, int finY) {
+<span class="nc" id="L294">        ptY = new PauseTransition(Duration.millis(1));</span>
+<span class="nc bnc" id="L295" title="All 8 branches missed.">        if ((signY &amp;&amp; comienzoY &gt;= finY) || (!signY &amp;&amp; comienzoY &lt;= finY)) {</span>
+<span class="nc" id="L296">            return;</span>
+        } else {
+<span class="nc" id="L298">            i1.ionNucleus.setCenterY(comienzoY);</span>
+<span class="nc" id="L299">            ptY.play();</span>
+<span class="nc" id="L300">            ptY.setOnFinished(e -&gt; {</span>
+                int c;
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                if (signY) {</span>
+<span class="nc" id="L303">                    c = comienzoY + 5;</span>
+                } else {
+<span class="nc" id="L305">                    c = comienzoY - 5;</span>
+                }
+<span class="nc" id="L307">                performeLoopY(i1, signY, c, finY);</span>
+<span class="nc" id="L308">            });</span>
+        }
+<span class="nc" id="L310">    }</span>
+
+<span class="nc" id="L312">    int yo = 0;</span>
+
+    private void moveElectron(Ion metal, Ion nonMetal, Circle c, boolean sign, int comienzo, int fin, int r) {
+<span class="nc" id="L315">        PauseTransition reloj = new PauseTransition(Duration.millis(1));</span>
+<span class="nc bnc" id="L316" title="All 8 branches missed.">        if ((!sign &amp;&amp; comienzo &gt; fin) || (sign &amp;&amp; comienzo &lt; fin)) {</span>
+<span class="nc" id="L317">            yo++;</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            if (r == yo) {</span>
+<span class="nc" id="L319">                c.centerXProperty().unbind();</span>
+<span class="nc" id="L320">                c.centerYProperty().unbind();</span>
+<span class="nc" id="L321">                Ion.exchangeElectrons(metal, nonMetal);</span>
+<span class="nc" id="L322">                metal.playElectrons();</span>
+<span class="nc" id="L323">                nonMetal.playElectrons();</span>
+            }
+<span class="nc" id="L325">            return;</span>
+        } else {
+<span class="nc" id="L327">            c.setCenterX(comienzo);</span>
+<span class="nc" id="L328">            reloj.play();</span>
+<span class="nc" id="L329">            reloj.setOnFinished(e -&gt; {</span>
+                int num;
+<span class="nc bnc" id="L331" title="All 2 branches missed.">                if (!sign) {</span>
+<span class="nc" id="L332">                    num = comienzo + 5;</span>
+                } else {
+<span class="nc" id="L334">                    num = comienzo - 5;</span>
+                }
+<span class="nc" id="L336">                moveElectron(metal, nonMetal, c, sign, num, fin, r);</span>
+<span class="nc" id="L337">            });</span>
+        }
+<span class="nc" id="L339">    }</span>
+
+    public void ionicInfo() {
+<span class="nc" id="L342">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L343">        alert.setTitle(&quot;Ionic Bonds Theory&quot;);</span>
+<span class="nc" id="L344">        alert.setContentText(&quot;An ionic bond is a type of chemical bond that forms between two atoms with very different electronegativities, &quot; +</span>
+                &quot;resulting in the transfer of electrons between the atoms. This transfer of electrons leads to the formation of positive and negative ions, &quot; +
+                &quot;which are held together by the electrostatic attraction between the oppositely charged ions.&quot;);
+<span class="nc" id="L347">        alert.showAndWait();</span>
+<span class="nc" id="L348">    }</span>
+
+    public void applicationInfo() {
+<span class="nc" id="L351">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L352">        alert.setTitle(&quot;Information About The Application&quot;);</span>
+<span class="nc" id="L353">        alert.setContentText(&quot;1) Double click the first ion. &quot; +</span>
+                &quot;\n 2) Double click the second ion that you want to bond it to, make sure both ions are nonmetal and metal, not the same. &quot; +
+                &quot;\n 3) Then press 3D to see the ion in 3D or continue creating new Ions.&quot;);
+<span class="nc" id="L356">        alert.showAndWait();</span>
+<span class="nc" id="L357">    }</span>
+
+    public void applicationHowTo() {
+<span class="nc" id="L360">        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L361">        alert.setTitle(&quot;How To Use This Application&quot;);</span>
+<span class="nc" id="L362">        alert.setContentText(&quot;There can be up to 16 ions at a time &quot; +</span>
+                &quot;\n - Double-click the ion to select it, it will go to the center and change colors&quot; +
+                &quot;\n - When the animation starts, the non metal will move towards the metal&quot; +
+                &quot;\n - Press clear to clear all the ions&quot; +
+                &quot;\n - Right click an ion to learn more information about it&quot;);
+<span class="nc" id="L367">        alert.showAndWait();</span>
+<span class="nc" id="L368">    }</span>
+
+<span class="nc" id="L370">    boolean b = false;</span>
+    int crt;
+    AnimationTimer an;
+
+    private void performeLoop(Ion nonMetal, Ion metal, boolean signX, int comienzoX, int finX, boolean signY, int comienzoY, int finY) {
+<span class="nc" id="L375">        performeLoopX(nonMetal, signX, comienzoX, finX);</span>
+<span class="nc" id="L376">        performeLoopY(nonMetal, signY, comienzoY, finY);</span>
+<span class="nc" id="L377">        b = false;</span>
+<span class="nc" id="L378">        an = new AnimationTimer() {</span>
+            @Override
+            public void handle(long l) {
+<span class="nc bnc" id="L381" title="All 6 branches missed.">                if (!b &amp;&amp; ptX.getStatus().equals(Animation.Status.STOPPED) &amp;&amp; ptY.getStatus().equals(Animation.Status.STOPPED)) {</span>
+<span class="nc" id="L382">                    crt = 0;</span>
+<span class="nc" id="L383">                    yo = 0;</span>
+<span class="nc" id="L384">                    int r = Ion.transitionValenceElectrons(metal, nonMetal);</span>
+<span class="nc" id="L385">                    System.out.println(nonMetal.charge + crt);</span>
+<span class="nc" id="L386">                    List&lt;Electron&gt; electronsCopy = new ArrayList&lt;&gt;(metal.electronsArray);</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">                    for (Electron e : electronsCopy) {</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">                        if (nonMetal.charge + crt &lt;= 9) {</span>
+<span class="nc" id="L389">                            e.electron.centerXProperty().unbind();</span>
+<span class="nc" id="L390">                            e.electron.centerYProperty().unbind();</span>
+<span class="nc" id="L391">                            moveElectron(metal, nonMetal, e.electron, signX, (int) e.electron.getCenterX(), (int) nonMetal.electronsArray.getFirst().electron.getCenterX(), r);</span>
+                        } else {
+<span class="nc" id="L393">                            metal.electronsArray.remove(e);</span>
+                        }
+<span class="nc" id="L395">                        crt++;</span>
+<span class="nc" id="L396">                    }</span>
+<span class="nc" id="L397">                    b = true;</span>
+<span class="nc" id="L398">                    ann();</span>
+                }
+<span class="nc" id="L400">            }</span>
+        };
+<span class="nc" id="L402">        an.start();</span>
+<span class="nc" id="L403">    }</span>
+
+    private void ann() {
+<span class="nc" id="L406">        an.stop();</span>
+<span class="nc" id="L407">    }</span>
+
+    private void animateThe2IonsReaction(Ion i1, Ion i2) {
+        Ion nonMetal, metal;
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        if (i1.isMetal) {</span>
+<span class="nc" id="L412">            metal = i1;</span>
+<span class="nc" id="L413">            nonMetal = i2;</span>
+        } else {
+<span class="nc" id="L415">            nonMetal = i1;</span>
+<span class="nc" id="L416">            metal = i2;</span>
+        }
+<span class="nc" id="L418">        Circle circle1 = nonMetal.ionNucleus;</span>
+<span class="nc" id="L419">        Circle circle2 = metal.ionNucleus;</span>
+
+<span class="nc" id="L421">        boolean signX = true;</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        if (nonMetal.ionNucleus.getCenterX() &gt; metal.ionNucleus.getCenterX()) {</span>
+<span class="nc" id="L423">            signX = false;</span>
+        }
+<span class="nc" id="L425">        boolean signY = true;</span>
+<span class="nc bnc" id="L426" title="All 2 branches missed.">        if (nonMetal.ionNucleus.getCenterY() &gt; metal.ionNucleus.getCenterY()) {</span>
+<span class="nc" id="L427">            signY = false;</span>
+        }
+<span class="nc" id="L429">        nonMetal.stopElectrons();</span>
+<span class="nc" id="L430">        metal.stopElectrons();</span>
+
+<span class="nc" id="L432">        Group g = new Group();</span>
+<span class="nc" id="L433">        Ion ion = new Ion(metal, nonMetal, g);</span>
+
+<span class="nc" id="L435">        performeLoop(nonMetal, metal, signX, (int) nonMetal.ionNucleus.getCenterX(), (int) (circle2.getCenterX() - 2 * nonMetal.ionCloud.getRadius()), signY, (int) nonMetal.ionNucleus.getCenterY(), (int) metal.ionNucleus.getCenterY());</span>
+
+<span class="nc" id="L437">        circle1.setFill(Color.BLUE);</span>
+<span class="nc" id="L438">        circle2.setFill(Color.RED);</span>
+<span class="nc" id="L439">        g.getChildren().addAll(nonMetal.ion, metal.ion);</span>
+<span class="nc" id="L440">        arrayOfIonsCreated.add(ion);</span>
+<span class="nc" id="L441">        nonMetal.ion.setOnMouseDragged(el -&gt; {</span>
+<span class="nc" id="L442">        });</span>
+<span class="nc" id="L443">        metal.ion.setOnMouseDragged(el -&gt; {</span>
+<span class="nc" id="L444">        });</span>
+<span class="nc" id="L445">        animationPane.getChildren().add(g);</span>
+<span class="nc" id="L446">        g.setOnMousePressed(e4 -&gt; {</span>
+<span class="nc" id="L447">            mouseX = e4.getSceneX() - nonMetal.ionNucleus.getCenterX();</span>
+<span class="nc" id="L448">            mouseY = e4.getSceneY() - nonMetal.ionNucleus.getCenterY();</span>
+<span class="nc" id="L449">            mouseX1 = e4.getSceneX() - metal.ionNucleus.getCenterX();</span>
+<span class="nc" id="L450">            mouseY1 = e4.getSceneY() - metal.ionNucleus.getCenterY();</span>
+<span class="nc" id="L451">        });</span>
+<span class="nc" id="L452">        g.setOnMouseDragged(e5 -&gt; {</span>
+<span class="nc" id="L453">            metal.stopElectrons();</span>
+<span class="nc" id="L454">            nonMetal.stopElectrons();</span>
+<span class="nc bnc" id="L455" title="All 4 branches missed.">            if (e5.getSceneX() &lt; (animationPane.getWidth()) &amp;&amp; e5.getSceneX() &gt; 0) {</span>
+<span class="nc" id="L456">                nonMetal.ionNucleus.setCenterX(e5.getSceneX() - mouseX);</span>
+<span class="nc" id="L457">                metal.ionNucleus.setCenterX(e5.getSceneX() - mouseX1);</span>
+            }
+<span class="nc bnc" id="L459" title="All 4 branches missed.">            if (e5.getSceneY() &lt; (animationPane.getHeight()) &amp;&amp; e5.getSceneY() &gt; 0) {</span>
+<span class="nc" id="L460">                nonMetal.ionNucleus.setCenterY(e5.getSceneY() - mouseY);</span>
+<span class="nc" id="L461">                metal.ionNucleus.setCenterY(e5.getSceneY() - mouseY1);</span>
+            }
+<span class="nc" id="L463">            metal.playElectrons();</span>
+<span class="nc" id="L464">            nonMetal.playElectrons();</span>
+
+<span class="nc" id="L466">        });</span>
+<span class="nc" id="L467">        g.setOnMouseClicked(e -&gt; {</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">            if (e.getButton() == MouseButton.SECONDARY) {</span>
+<span class="nc" id="L469">                Label l = new Label();</span>
+<span class="nc" id="L470">                l.setText(ion.toString());</span>
+<span class="nc" id="L471">                l.setStyle(&quot;-fx-background-color: transparent; -fx-padding: 5px;&quot;);</span>
+<span class="nc" id="L472">                l.setLayoutX(e.getSceneX());</span>
+<span class="nc" id="L473">                l.setLayoutY(e.getSceneY());</span>
+<span class="nc" id="L474">                animationPane.getChildren().add(l);</span>
+<span class="nc" id="L475">                PauseTransition p = new PauseTransition(Duration.seconds(3));</span>
+<span class="nc" id="L476">                p.setOnFinished(er -&gt; {</span>
+<span class="nc" id="L477">                    animationPane.getChildren().remove(l);</span>
+<span class="nc" id="L478">                });</span>
+<span class="nc" id="L479">                p.play();</span>
+
+            }
+<span class="nc" id="L482">        });</span>
+<span class="nc" id="L483">        metal.ion.setOnMouseClicked(e -&gt; {</span>
+<span class="nc" id="L484">        });</span>
+<span class="nc" id="L485">        nonMetal.ion.setOnMouseClicked(e -&gt; {</span>
+<span class="nc" id="L486">        });</span>
+
+<span class="nc" id="L488">        ionListView.getItems().add(ion);</span>
+<span class="nc" id="L489">        current = null;</span>
+
+
+<span class="nc" id="L492">        metal.groupIon = g;</span>
+<span class="nc" id="L493">        nonMetal.groupIon = g;</span>
+
+<span class="nc" id="L495">    }</span>
+
+    private void isIonCompatible(Ion i1, Ion i2) {
+<span class="nc bnc" id="L498" title="All 2 branches missed.">        if (i1.isMetal != i2.isMetal) {</span>
+<span class="nc bnc" id="L499" title="All 4 branches missed.">            if (i1.counterOfBonds != i1.numOfBonds || i2.counterOfBonds != i2.numOfBonds) {</span>
+<span class="nc" id="L500">                ft.stop();</span>
+<span class="nc" id="L501">                animateThe2IonsReaction(i1, i2);</span>
+            } else {
+<span class="nc" id="L503">                label1.setText(&quot;There are no more valence electrons&quot;);</span>
+<span class="nc" id="L504">                label1.setVisible(true);</span>
+<span class="nc" id="L505">                timeline.play();</span>
+            }
+        } else {
+            String s;
+<span class="nc bnc" id="L509" title="All 2 branches missed.">            if (i1.isMetal) {</span>
+<span class="nc" id="L510">                s = &quot;metals&quot;;</span>
+            } else {
+<span class="nc" id="L512">                s = &quot;non-metals&quot;;</span>
+            }
+<span class="nc" id="L514">            label1.setText(&quot;Both elements are &quot; + s);</span>
+<span class="nc" id="L515">            label1.setVisible(true);</span>
+<span class="nc" id="L516">            timeline.play();</span>
+        }
+<span class="nc" id="L518">    }</span>
+
+    @FXML
+    void changeTo3D(ActionEvent event) throws IOException {
+<span class="nc" id="L522">        fxmlLoader = FXMLLoader.load(HelloApplication.class.getResource(&quot;Ionic-3D.fxml&quot;));</span>
+<span class="nc" id="L523">        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();</span>
+<span class="nc" id="L524">        scene = new Scene(fxmlLoader, 1200, 800, true);</span>
+<span class="nc" id="L525">        stage.setScene(scene);</span>
+<span class="nc" id="L526">        stage.show();</span>
+
+<span class="nc" id="L528">    }</span>
+
+    @FXML
+    void resetAnimation(ActionEvent event) {
+<span class="nc" id="L532">        boxIons.getChildren().clear();</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">        if (isItMetal) {</span>
+<span class="nc" id="L534">            resetButton.setText(&quot;Non-Metals&quot;);</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">            for (int i = 0; i &lt; ions.length; i++) {</span>
+<span class="nc" id="L536">                boxIons.getChildren().add(nonMetalButtons[i]);</span>
+            }
+<span class="nc" id="L538">            isItMetal = false;</span>
+        } else {
+<span class="nc" id="L540">            resetButton.setText(&quot;Metals&quot;);</span>
+<span class="nc" id="L541">            isItMetal = true;</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">            for (int i = 0; i &lt; metals.length; i++) {</span>
+<span class="nc" id="L543">                boxIons.getChildren().add(metalButtons[i]);</span>
+            }
+        }
+
+<span class="nc" id="L547">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
